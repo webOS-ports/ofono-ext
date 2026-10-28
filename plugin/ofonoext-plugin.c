@@ -12,13 +12,14 @@
 #include <ofono/plugin.h>
 #include <ofono/log.h>
 
-extern int __ofono_slot_manager_init(void);
+extern void __ofono_slot_manager_init(void);
 extern void __ofono_slot_manager_cleanup(void);
 
 static int ofonoext_init(void)
 {
 	DBG("starting oFono extensions");
-	return __ofono_slot_manager_init();
+	__ofono_slot_manager_init();
+	return 0;
 }
 
 static void ofonoext_exit(void)
@@ -27,6 +28,15 @@ static void ofonoext_exit(void)
 	__ofono_slot_manager_cleanup();
 }
 
+/*
+ * Lowest priority, so that this plugin's exit runs last. oFono calls the
+ * plugins' exit functions in the same order as their init functions,
+ * highest priority first. Drivers such as the binder plugin still walk and
+ * unregister their slot driver in their own exit, which must come before
+ * __ofono_slot_manager_cleanup() frees that registration. The slot manager
+ * is created by whichever comes first, a driver registering or the init
+ * below, so starting late is fine.
+ */
 OFONO_PLUGIN_DEFINE(ofonoext, "oFono extension APIs", VERSION,
-			OFONO_PLUGIN_PRIORITY_HIGH,
+			OFONO_PLUGIN_PRIORITY_LOW,
 			ofonoext_init, ofonoext_exit)
