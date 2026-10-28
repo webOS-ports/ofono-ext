@@ -8,7 +8,9 @@
  * driver link the shared library instead, and the dynamic linker resolves
  * it once.
  */
+#ifndef OFONO_API_SUBJECT_TO_CHANGE
 #define OFONO_API_SUBJECT_TO_CHANGE
+#endif
 #include <ofono/plugin.h>
 #include <ofono/log.h>
 
